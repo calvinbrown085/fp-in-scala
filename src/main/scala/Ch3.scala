@@ -43,6 +43,8 @@ object Chapter3 {
         case Nil => z
         case Cons(x, xs) => f(x, foldRight(xs, z)(f))
       }
+    def foldRightViaFoldLeft[A,B](l: List[A], z: B)(f: (A,B) => B): B =
+      foldLeft(reverse(l), z)((b,a) => f(a,b))
 
     def sum2(ns: List[Int]) =
       foldRight(ns, 0)((x,y) => x + y)
@@ -80,10 +82,40 @@ object Chapter3 {
       case Cons(x, y) => Cons(x, init(y))
     }
 
-    def length[A](l: List[A]): Int = ???
+    @annotation.tailrec
+    def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B =
+      l match {
+        case Nil => z
+        case Cons(a, b) => foldLeft(b, f(z, a))(f)
+      }
 
-    def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
+
+    def length[A](l: List[A]): Int =
+      foldLeft(l, 0)((acc, _) => acc + 1)
+
+    def sumFoldLeft(ns: List[Int]) =
+      foldLeft(ns, 0)((x,y) => x + y)
+
+    def productFoldLeft(ns: List[Double]) =
+      foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
+
+    def reverse[A](l: List[A]): List[A] =
+      foldLeft(l, List[A]())((acc, h) => Cons(h, acc))
+
+    def appendViaFoldLeft[A](l: List[A], r: List[A]): List[A] =
+      foldLeft(reverse(l), r)((h , acc) => Cons(acc, h))
+
+    def appendViaFoldRight[A](l: List[A], r: List[A]): List[A] =
+      foldRight(l, r)(Cons(_, _))
 
     def map[A,B](l: List[A])(f: A => B): List[B] = ???
+
+    def addInteger(l: List[Int]): List[Int] = //exersize 3.16
+      foldLeft(reverse(l), List[Int]())((h, acc) => Cons(acc + 1, h))
+
+    def toString(l: List[Double]): List[String] = //exersize 3.17
+      foldLeft(reverse(l), List[String]())((h, acc) => Cons(acc.toString, h))
+
+    def filter[A](l: List[A])(f: A => Boolean): List[A] =
   }
 }
