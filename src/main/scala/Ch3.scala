@@ -88,7 +88,8 @@ object Chapter3 {
         case Nil => z
         case Cons(a, b) => foldLeft(b, f(z, a))(f)
       }
-
+    def concat[A](l: List[List[A]]): List[A] =
+      foldRight(l, Nil:List[A])(append)
 
     def length[A](l: List[A]): Int =
       foldLeft(l, 0)((acc, _) => acc + 1)
@@ -108,7 +109,8 @@ object Chapter3 {
     def appendViaFoldRight[A](l: List[A], r: List[A]): List[A] =
       foldRight(l, r)(Cons(_, _))
 
-    def map[A,B](l: List[A])(f: A => B): List[B] = ???
+    def map[A,B](l: List[A])(f: A => B): List[B] =
+      foldRightViaFoldLeft(l, Nil:List[B])((h, t) => Cons(f(h), t))
 
     def addInteger(l: List[Int]): List[Int] = //exersize 3.16
       foldLeft(reverse(l), List[Int]())((h, acc) => Cons(acc + 1, h))
@@ -116,6 +118,14 @@ object Chapter3 {
     def toString(l: List[Double]): List[String] = //exersize 3.17
       foldLeft(reverse(l), List[String]())((h, acc) => Cons(acc.toString, h))
 
-    def filter[A](l: List[A])(f: A => Boolean): List[A] =
+
+    def filter[A](l: List[A])(f: A => Boolean): List[A] = //exersize 3.19
+      foldRightViaFoldLeft(l, Nil:List[A])((h, t) => if(f(h)) Cons(h, t) else t)
+
+
+    def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] =
+      concat(map(as)(f))
   }
+
+
 }
